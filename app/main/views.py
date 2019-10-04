@@ -2,14 +2,13 @@ from flask import current_app, request
 import json
 import requests
 from random import randint, sample
-from faker import Faker
 from . import main
 from app.models import User, Post, PostRate
+from app import fake
 
 
 @main.route('/run_bot')
 def run_bot():
-    fake = Faker()
     base_url = request.host_url
     users = []
     errors = []

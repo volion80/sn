@@ -2,6 +2,7 @@ from flask import current_app
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
 from app.models import User, RevokedToken, Post, PostRate
+from helper import lookup_user_data, verify_email
 
 
 user_parser = reqparse.RequestParser()
@@ -13,11 +14,21 @@ class UserSignup(Resource):
     def post(self):
         if User.count() >= current_app.config['MAX_USERS_SIGNUP']:
             return {'error': 'Users sign up limit has been reached'}
+
         data = user_parser.parse_args()
+
+        if not data['email'] or not data['password']:
+            return {'error': 'email and password cannot be empty'}
+
         if User.find_by_email(data['email']):
             return {'error': 'User {} already exists'. format(data['email'])}
-        if not data['password']:
-            return {'error': 'password cannot be empty'}
+
+        if current_app.config['EMAIL_HUNTER_ENABLED']:
+            if not verify_email(data['email']):
+                return {'error': 'email is not valid: {}'.format(data['email'])}
+
+        more_user_data = lookup_user_data(data['email']) if current_app.config['CLEARBIT_ENABLED'] else {}
+
         new_user = User(
             email=data['email'],
             password=User.generate_hash(data['password'])
@@ -30,7 +41,8 @@ class UserSignup(Resource):
                 'message': 'User {} has been created'.format(data['email']),
                 'id': new_user.id,
                 'access_token': access_token,
-                'refresh_token': refresh_token
+                'refresh_token': refresh_token,
+                'additional_user_data': more_user_data
             }
         except:
             return {'error': 'Sign up: Something went wrong.'}, 500
@@ -87,12 +99,9 @@ class TokenRefresh(Resource):
         return {'access_token': access_token}
 
 
-class AllUsers(Resource):
+class Users(Resource):
     def get(self):
         return {'users': User.all()}
-
-    def delete(self):
-        return User.delete_all()
 
 
 post_parser = reqparse.RequestParser()

@@ -11,9 +11,15 @@ class Config:
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
 
-    MAX_USERS_SIGNUP = 10
-    MAX_POSTS_PER_USER = 10
-    MAX_LIKES_PER_USER = 10
+    MAX_USERS_SIGNUP = 5
+    MAX_POSTS_PER_USER = 5
+    MAX_LIKES_PER_USER = 5
+
+    EMAIL_HUNTER_ENABLED = False
+    EMAIL_HUNTER_API_KEY = 'email-hunter-api-key'
+
+    CLEARBIT_ENABLED = False
+    CLEARBIT_API_KEY = 'clearbit-api-key'
 
     @staticmethod
     def init_app(app):

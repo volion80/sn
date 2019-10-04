@@ -85,7 +85,7 @@ class User(db.Model):
             db.session.commit()
             return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
         except:
-            return {'message': 'Something went wrong'}
+            return {'error': 'Delete Users: Something went wrong'}
 
     def to_json(self):
         return {

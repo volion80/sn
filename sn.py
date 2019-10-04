@@ -14,9 +14,9 @@ api.add_resource(resources.UserLogin, '/login')
 api.add_resource(resources.UserLogoutAccess, '/logout/access')
 api.add_resource(resources.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(resources.TokenRefresh, '/token/refresh')
-api.add_resource(resources.AllUsers, '/users')
 api.add_resource(resources.Posts, '/posts')
 api.add_resource(resources.PostsRates, '/posts/rate')
+api.add_resource(resources.Users, '/users')
 
 
 @jwt.token_in_blacklist_loader
